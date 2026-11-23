@@ -9,6 +9,8 @@
   "scripts": {
     "release": "node scripts/release.mjs",
     "rollback": "node scripts/rollback.mjs",
+    "validate": "node scripts/validate-plugins.mjs",
+    "site:dev": "npm --prefix site run dev",
     "test": "node --test \"scripts/**/*.test.mjs\""
   }
 }
