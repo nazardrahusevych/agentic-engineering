@@ -1,0 +1,37 @@
+name: Validate
+
+# Checks the marketplace harness (SPEC-2): plugin manifests, README/CHANGELOG, dependencies, project-neutral text,
+# plugin-agent frontmatter and skill references, plus the repository tooling tests. Separate from the site workflow,
+# so a broken plugin and a broken site show up as different checks.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: validate-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  plugins:
+    name: Plugins
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+
+      - name: Validate plugins
+        run: npm run validate
+
+      - name: Tooling tests
+        run: npm test

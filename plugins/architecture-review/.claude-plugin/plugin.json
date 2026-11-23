@@ -1,0 +1,21 @@
+{
+  "name": "architecture-review",
+  "version": "0.1.0",
+  "description": "An on-demand architecture reviewer for a diff, a branch or a module: layering, dependency direction, module boundaries and wiring.",
+  "author": {
+    "name": "Nazar Drahusevych",
+    "url": "https://github.com/nazardrahusevych"
+  },
+  "homepage": "https://nazardrahusevych.github.io/agentic-engineering/plugins/architecture-review/",
+  "repository": "https://github.com/nazardrahusevych/agentic-engineering",
+  "license": "MIT",
+  "keywords": [
+    "architecture",
+    "review",
+    "agent",
+    "layering"
+  ],
+  "dependencies": [
+    "engineering-paved-path"
+  ]
+}
