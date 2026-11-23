@@ -1,0 +1,33 @@
+---
+import { getCatalog } from '../lib/catalog-data.ts';
+
+const catalog = getCatalog();
+const { commit, commitDate } = catalog.buildInfo;
+const known = /^[0-9a-f]{7,40}$/.test(commit);
+const short = known ? commit.slice(0, 7) : commit;
+const date = commitDate.slice(0, 10);
+const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+---
+
+<footer class="site-footer">
+  <div class="container">
+    <p data-testid="build-info">
+      Built from
+      {
+        known ? (
+          <a href={`https://github.com/${catalog.repo}/commit/${commit}`} rel="noopener noreferrer">
+            <code>{short}</code>
+          </a>
+        ) : (
+          <code>{short}</code>
+        )
+      }
+      (<time datetime={commitDate}>{date}</time>)
+    </p>
+    <p>
+      <a href={`${base}catalog.json`}>catalog.json</a> ·
+      <a href={`${base}llms.txt`}>llms.txt</a> ·
+      <a href={`https://github.com/${catalog.repo}`} rel="noopener noreferrer">Source on GitHub</a>
+    </p>
+  </div>
+</footer>
