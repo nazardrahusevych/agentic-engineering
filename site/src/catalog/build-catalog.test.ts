@@ -139,6 +139,43 @@ describe('buildCatalog on the fixture marketplace', () => {
   });
 });
 
+describe('workflows and dependencies (SPEC-3)', () => {
+  it('AC-5: a workflow file becomes a workflow entry named and described by its meta, never executed', () => {
+    const workflow = byId('alpha:triage');
+    expect(workflow).toMatchObject({
+      type: 'workflow',
+      name: 'triage',
+      description: 'Triage new issues: label them and suggest an owner.',
+      path: 'plugins/alpha/workflows/triage.js',
+      detailPath: 'plugins/alpha/workflows/triage/',
+      bodyHtml: null,
+      dependencies: [],
+    });
+    expect(workflow.workflow?.phases).toEqual(['Collect', 'Label', 'Report']);
+    expect(workflow.workflow?.command).toBe('/alpha:triage');
+    expect(workflow.workflow?.source).toContain("throw new Error('the catalog build must never execute");
+  });
+
+  it('AC-4: plugin entries carry their dependencies; components carry none', () => {
+    expect(byId('beta').dependencies).toEqual(['alpha']);
+    expect(byId('alpha').dependencies).toEqual([]);
+    expect(byId('beta:planner').dependencies).toEqual([]);
+  });
+
+  it('warns about a dependency outside the marketplace and accepts object and cross-marketplace forms', async () => {
+    const root = await copyFixture('marketplace');
+    await writeFixtureFile(
+      root,
+      'plugins/beta/.claude-plugin/plugin.json',
+      JSON.stringify({ name: 'beta', version: '0.3.0', dependencies: [{ name: 'alpha', version: '^1.0.0' }, 'ghost', 'x@other'] }),
+    );
+    const built = build(root);
+    expect(built.artifacts.find((a) => a.id === 'beta')?.dependencies).toEqual(['alpha', 'ghost', 'x@other']);
+    expect(built.warnings).toContain('plugin "beta" depends on "ghost", which is not in .claude-plugin/marketplace.json');
+    expect(built.warnings.some((w) => w.includes('"x@other"'))).toBe(false);
+  });
+});
+
 describe('buildCatalog edge cases', () => {
   it('an empty marketplace gives zero entries and no error', async () => {
     const root = await copyFixture('marketplace');

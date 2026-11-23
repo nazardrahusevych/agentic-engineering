@@ -20,6 +20,7 @@ export interface ComponentPaths {
   skills: string[];
   agents: string[];
   commands: string[];
+  workflows: string[];
   hooks: ConfigSource[];
   mcp: ConfigSource[];
 }
@@ -33,13 +34,15 @@ export interface PluginManifest {
   license: string | null;
   author: { name: string; url: string | null } | null;
   keywords: string[];
+  /** `dependencies` of plugin.json as `name` or `name@marketplace`. */
+  dependencies: string[];
   changelogHtml: string | null;
   otherComponents: string[];
   paths: ComponentPaths;
 }
 
 /** Component kinds Claude Code knows but the catalog gives no card (Non-goals). */
-const OTHER_COMPONENTS = ['output-styles', 'workflows', 'themes', 'monitors', 'bin', '.lsp.json'];
+const OTHER_COMPONENTS = ['output-styles', 'themes', 'monitors', 'bin', '.lsp.json'];
 
 export function exists(path: string): boolean {
   try {
@@ -125,6 +128,10 @@ export function readPlugin(ctx: ReadContext, entry: MarketplaceEntry, dir: strin
       manifest.commands === undefined
         ? [at('commands')]
         : strings(manifest.commands).map((value) => componentPath(dir, value, manifestPath)),
+    workflows:
+      manifest.workflows === undefined
+        ? [at('workflows')]
+        : strings(manifest.workflows).map((value) => componentPath(dir, value, manifestPath)),
     hooks: [
       ...optionalFile('hooks/hooks.json'),
       ...(manifest.hooks === undefined ? [] : configSources(dir, manifest.hooks, manifestPath)),
@@ -154,10 +161,24 @@ export function readPlugin(ctx: ReadContext, entry: MarketplaceEntry, dir: strin
     license: typeof manifest.license === 'string' ? manifest.license : null,
     author,
     keywords: strings(manifest.keywords),
+    dependencies: readDependencies(manifest.dependencies, manifestPath),
     changelogHtml,
     otherComponents: OTHER_COMPONENTS.filter((name) => exists(join(ctx.root, at(name)))),
     paths,
   };
+}
+
+/** `dependencies`: strings (`name`, `name@marketplace`) or `{ name, marketplace?, version? }` objects. */
+function readDependencies(value: unknown, manifestPath: string): string[] {
+  if (value === undefined) return [];
+  if (!Array.isArray(value)) throw new ProblemError(manifestPath, '"dependencies" must be an array');
+  return value.map((item, index) => {
+    if (typeof item === 'string' && item.trim()) return item.trim();
+    if (isRecord(item) && typeof item.name === 'string' && item.name.trim()) {
+      return typeof item.marketplace === 'string' && item.marketplace ? `${item.name}@${item.marketplace}` : item.name;
+    }
+    throw new ProblemError(manifestPath, `"dependencies[${index}]" must be a plugin name or { "name": … }`);
+  });
 }
 
 function dedupeSources(sources: ConfigSource[]): ConfigSource[] {

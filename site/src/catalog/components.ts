@@ -5,14 +5,15 @@ import { isRecord, readJsonFile } from './marketplace.ts';
 import { isSafeName } from './paths.ts';
 import { exists, type ConfigSource, type PluginManifest, type ReadContext } from './plugin.ts';
 import { ProblemError } from './problems.ts';
-import type { HookRow, McpServerInfo } from './types.ts';
+import type { HookRow, McpServerInfo, WorkflowInfo } from './types.ts';
+import { parseWorkflowMeta, WorkflowMetaError } from './workflow-meta.ts';
 
 export const MAX_FILES_PER_PLUGIN = 500;
 const SKIPPED_DIRS = new Set(['node_modules', '.git']);
 
 /** A component as read from disk, before the catalog fields (URLs, tags, install) are added. */
 export interface ComponentDraft {
-  type: 'skill' | 'agent' | 'command' | 'hooks' | 'mcp';
+  type: 'skill' | 'agent' | 'command' | 'workflow' | 'hooks' | 'mcp';
   name: string;
   description: string;
   /** Repository-relative path of the component (directory for skills, file otherwise). */
@@ -27,6 +28,7 @@ export interface ComponentDraft {
   files: string[];
   hooks?: HookRow[];
   mcp?: McpServerInfo;
+  workflow?: WorkflowInfo;
 }
 
 /** Shared budget for the files listed per plugin. */
@@ -215,6 +217,55 @@ function readAgentOrCommand(ctx: ReadContext, file: string, type: 'agent' | 'com
   };
 }
 
+// ---------- workflows ----------
+
+function workflowFiles(ctx: ReadContext, plugin: PluginManifest): string[] {
+  const files: string[] = [];
+  for (const path of plugin.paths.workflows) {
+    const info = stat(join(ctx.root, path));
+    if (!info) {
+      if (!isDefault(plugin, path, 'workflows')) {
+        ctx.problems.push({ path: posix.join(plugin.dir, '.claude-plugin/plugin.json'), reason: `workflows path "${path}" does not exist` });
+      }
+      continue;
+    }
+    if (info.isFile()) {
+      if (/\.(?:js|mjs)$/.test(path)) files.push(path);
+      continue;
+    }
+    for (const name of readdirSync(join(ctx.root, path)).sort()) {
+      const rel = posix.join(path, name);
+      if (/\.(?:js|mjs)$/.test(name) && stat(join(ctx.root, rel))?.isFile()) files.push(rel);
+    }
+  }
+  return [...new Set(files)];
+}
+
+/** A workflow is read as text: its literal `meta` names and describes it; the file is never executed (SPEC-3 AC-6). */
+function readWorkflow(ctx: ReadContext, plugin: PluginManifest, file: string, budget: FileBudget): ComponentDraft {
+  const source = readText(ctx, file);
+  let meta;
+  try {
+    meta = parseWorkflowMeta(source);
+  } catch (error) {
+    if (error instanceof WorkflowMetaError) throw new ProblemError(file, `invalid workflow meta: ${error.message}`);
+    throw error;
+  }
+  checkName(meta.name, file);
+  return {
+    type: 'workflow',
+    name: meta.name,
+    description: meta.description,
+    path: file,
+    isDir: false,
+    markdown: null,
+    text: [meta.description, ...meta.phases].join(' '),
+    tags: null,
+    files: listFiles(ctx.root, file, budget),
+    workflow: { phases: meta.phases, command: `/${plugin.name}:${meta.name}`, source },
+  };
+}
+
 // ---------- hooks ----------
 
 function loadConfig(ctx: ReadContext, source: ConfigSource): unknown {
@@ -369,6 +420,10 @@ export function readComponents(ctx: ReadContext, plugin: PluginManifest, budget:
   }
   for (const file of markdownFiles(ctx, plugin, plugin.paths.commands, 'commands')) {
     const draft = attempt(ctx, () => readAgentOrCommand(ctx, file, 'command', budget));
+    if (draft) drafts.push(draft);
+  }
+  for (const file of workflowFiles(ctx, plugin)) {
+    const draft = attempt(ctx, () => readWorkflow(ctx, plugin, file, budget));
     if (draft) drafts.push(draft);
   }
   const hooks = readHooks(ctx, plugin, budget);

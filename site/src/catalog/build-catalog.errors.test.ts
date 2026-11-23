@@ -102,6 +102,24 @@ describe('buildCatalog failures (AC-6)', () => {
     ]);
   });
 
+  it('SPEC-3 AC-6: a workflow without a literal meta', async () => {
+    const problems = await problemsAfter([
+      ['plugins/alpha/workflows/triage.js', 'export const meta = makeMeta()\n'],
+    ]);
+    expect(problems).toEqual([
+      { path: 'plugins/alpha/workflows/triage.js', reason: 'invalid workflow meta: meta must be an object literal' },
+    ]);
+  });
+
+  it('malformed plugin.json dependencies', async () => {
+    const problems = await problemsAfter([
+      ['plugins/beta/.claude-plugin/plugin.json', JSON.stringify({ name: 'beta', dependencies: 'alpha' })],
+    ]);
+    expect(problems).toEqual([
+      { path: 'plugins/beta/.claude-plugin/plugin.json', reason: '"dependencies" must be an array' },
+    ]);
+  });
+
   it('reports two broken files together', async () => {
     const problems = await problemsAfter([
       ['plugins/alpha/.mcp.json', '[not json'],

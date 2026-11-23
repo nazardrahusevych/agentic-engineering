@@ -3,7 +3,7 @@ import { compareHits } from './engine.ts';
 import type { SearchHit } from './types.ts';
 
 /** Landing order of the types (AC-15): plugins first, then components grouped by type. */
-export const TYPE_ORDER: readonly ArtifactType[] = ['plugin', 'skill', 'agent', 'command', 'hooks', 'mcp'];
+export const TYPE_ORDER: readonly ArtifactType[] = ['plugin', 'skill', 'agent', 'command', 'workflow', 'hooks', 'mcp'];
 
 /** Code-point comparison of lowercased text, then raw text: stable across locales. */
 export function compareText(a: string, b: string): number {
@@ -18,6 +18,7 @@ const SEGMENT: Record<Exclude<ArtifactType, 'plugin' | 'hooks'>, string> = {
   skill: 'skills',
   agent: 'agents',
   command: 'commands',
+  workflow: 'workflows',
   mcp: 'mcp',
 };
 
