@@ -100,7 +100,12 @@ function Browser({ data, base, repo }: { data: Data; base: string; repo: string 
           {results.length === 1 ? '1 artifact' : `${results.length} artifacts`}
         </p>
         {results.length === 0 ? (
-          <EmptyState hasFilters={filtersSet} onClearFilters={clearFilters} requestUrl={requestIssueUrl(repo, state)} />
+          <EmptyState
+            hasFilters={filtersSet}
+            catalogEmpty={data.catalog.entries.length === 0}
+            onClearFilters={clearFilters}
+            requestUrl={requestIssueUrl(repo, state)}
+          />
         ) : (
           <ul class="cards">
             {results.map((entry) => (

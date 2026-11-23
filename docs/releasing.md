@@ -5,7 +5,7 @@ Two things in this repository ship to users, and they release differently:
 | What | How users get it | Release | Rollback |
 |---|---|---|---|
 | A plugin (`plugins/<name>/`) | Claude Code copies it into its cache when the plugin's **version changes** | `scripts/release.mjs` | `scripts/rollback.mjs` (roll forward) |
-| The catalog site (GitHub Pages) | browser loads the latest deployment | the Pages workflow on push to `main` | redeploy an older ref (see the site spec) |
+| The catalog site (GitHub Pages) | browser loads the latest deployment | the Pages workflow on push to `main` | redeploy an older ref ([docs/catalog-site.md](catalog-site.md#deploying-and-rolling-back)) |
 
 The marketplace catalog itself (`.claude-plugin/marketplace.json`) has no version of its own: Claude Code reads it
 from the default branch on every refresh, so a change to it is live as soon as it lands on `main`.
