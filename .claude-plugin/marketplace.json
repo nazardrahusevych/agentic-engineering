@@ -4,5 +4,53 @@
     "name": "Nazar Drahusevych"
   },
   "description": "Skills, agents, hooks and workflows for engineering with AI coding agents",
-  "plugins": []
+  "plugins": [
+    {
+      "name": "engineering-paved-path",
+      "source": "./plugins/engineering-paved-path",
+      "description": "Shared engineering skills: onion and frontend architecture, security, TypeScript, Zod, React, Next.js, Fastify, Drizzle, PostgreSQL, Mermaid and engineering insights.",
+      "category": "engineering",
+      "tags": [
+        "architecture",
+        "security",
+        "typescript",
+        "react",
+        "backend"
+      ]
+    },
+    {
+      "name": "research-tools",
+      "source": "./plugins/research-tools",
+      "description": "A read-only researcher agent that finds facts in the repository or on the web and returns a cited report with explicit gaps.",
+      "category": "research",
+      "tags": [
+        "research",
+        "web",
+        "citations"
+      ]
+    },
+    {
+      "name": "architecture-review",
+      "source": "./plugins/architecture-review",
+      "description": "An on-demand architecture reviewer for a diff, a branch or a module: layering, dependency direction, module boundaries and wiring.",
+      "category": "quality",
+      "tags": [
+        "architecture",
+        "review",
+        "layering"
+      ]
+    },
+    {
+      "name": "sdd-engineering",
+      "source": "./plugins/sdd-engineering",
+      "description": "Spec-driven development: spec-creator, implementation-planner, implementer and plan-verifier agents, the spec and run-plan skills, and the retro workflow.",
+      "category": "workflow",
+      "tags": [
+        "spec-driven-development",
+        "planning",
+        "workflow",
+        "verification"
+      ]
+    }
+  ]
 }

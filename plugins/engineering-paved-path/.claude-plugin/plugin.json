@@ -1,0 +1,22 @@
+{
+  "name": "engineering-paved-path",
+  "version": "0.1.0",
+  "description": "Shared engineering skills: onion and frontend architecture, security, TypeScript, Zod, React, Next.js, Fastify, Drizzle, PostgreSQL, Mermaid and engineering insights.",
+  "author": {
+    "name": "Nazar Drahusevych",
+    "url": "https://github.com/nazardrahusevych"
+  },
+  "homepage": "https://nazardrahusevych.github.io/agentic-engineering/plugins/engineering-paved-path/",
+  "repository": "https://github.com/nazardrahusevych/agentic-engineering",
+  "license": "MIT",
+  "keywords": [
+    "skills",
+    "architecture",
+    "security",
+    "typescript",
+    "react",
+    "fastify",
+    "drizzle",
+    "postgresql"
+  ]
+}

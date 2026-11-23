@@ -1,0 +1,18 @@
+{
+  "name": "research-tools",
+  "version": "0.1.0",
+  "description": "A read-only researcher agent that finds facts in the repository or on the web and returns a cited report with explicit gaps.",
+  "author": {
+    "name": "Nazar Drahusevych",
+    "url": "https://github.com/nazardrahusevych"
+  },
+  "homepage": "https://nazardrahusevych.github.io/agentic-engineering/plugins/research-tools/",
+  "repository": "https://github.com/nazardrahusevych/agentic-engineering",
+  "license": "MIT",
+  "keywords": [
+    "research",
+    "agent",
+    "web-search",
+    "citations"
+  ]
+}

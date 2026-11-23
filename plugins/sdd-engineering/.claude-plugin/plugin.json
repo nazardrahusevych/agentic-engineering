@@ -1,0 +1,26 @@
+{
+  "name": "sdd-engineering",
+  "version": "0.1.0",
+  "description": "Spec-driven development: spec-creator, implementation-planner, implementer and plan-verifier agents, the spec and run-plan skills, and the retro workflow.",
+  "author": {
+    "name": "Nazar Drahusevych",
+    "url": "https://github.com/nazardrahusevych"
+  },
+  "homepage": "https://nazardrahusevych.github.io/agentic-engineering/plugins/sdd-engineering/",
+  "repository": "https://github.com/nazardrahusevych/agentic-engineering",
+  "license": "MIT",
+  "keywords": [
+    "spec-driven-development",
+    "sdd",
+    "specs",
+    "planning",
+    "implementation",
+    "verification",
+    "retro"
+  ],
+  "dependencies": [
+    "engineering-paved-path",
+    "research-tools",
+    "architecture-review"
+  ]
+}
