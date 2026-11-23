@@ -33,7 +33,7 @@ test.describe('detail pages', () => {
     );
     await expect(d.getByTestId('source-link')).toHaveAttribute('rel', 'noopener noreferrer');
     const siblings = d.getByTestId('sibling-list');
-    await expect(siblings.getByRole('link')).toHaveText(['alpha', 'security-audit', 'reviewer', 'deploy-check', 'hooks', 'docs-search']);
+    await expect(siblings.getByRole('link')).toHaveText(['alpha', 'security-audit', 'reviewer', 'deploy-check', 'triage', 'hooks', 'docs-search']);
     await d.getByRole('button', { name: /Copy/ }).click();
     expect(await page.evaluate(() => navigator.clipboard.readText())).toBe('/plugin install alpha@agentic-engineering');
   });
@@ -76,7 +76,7 @@ test.describe('detail pages', () => {
     await expect(facts).toContainText('output-styles');
     await expect(detail(page).getByTestId('changelog').getByRole('heading', { name: /1\.2\.0/ })).toBeVisible();
     await expect(detail(page).getByTestId('file-list')).toContainText('plugins/alpha/output-styles/terse.md');
-    await expect(detail(page).getByTestId('sibling-list').getByRole('link')).toHaveCount(6);
+    await expect(detail(page).getByTestId('sibling-list').getByRole('link')).toHaveCount(7);
   });
 
   test('Untrusted inputs: hostile markdown runs nothing and renders no script, iframe or image', async ({ page }) => {

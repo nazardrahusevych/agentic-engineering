@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { CatalogEntry } from '../../catalog/types.ts';
 import { applyFilters, emptyFilters, facetCounts, FILTER_KEYS, orderResults, valuesOf, type FilterKey } from '../../search/browse.ts';
 import { search, type SearchIndex } from '../../search/engine.ts';

@@ -31,7 +31,7 @@ describe('catalog.json (AC-30)', () => {
     expect(document.schemaVersion).toBe(1);
     expect(document.commit).toBe('c'.repeat(40));
     expect(document.$schema).toBe(`${siteUrl}catalog.schema.json`);
-    expect(document.entries).toHaveLength(12);
+    expect(document.entries).toHaveLength(13);
     for (const entry of document.entries) {
       expect(entry.detailUrl.startsWith(siteUrl)).toBe(true);
       expect(Object.keys(entry)).not.toContain('bodyHtml');

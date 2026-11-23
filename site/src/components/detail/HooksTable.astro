@@ -1,21 +1,23 @@
 ---
 import type { HookRow } from '../../catalog/types.ts';
+import { en } from '../../i18n/en.ts';
 
 interface Props {
   rows: HookRow[];
 }
 
 const { rows } = Astro.props;
+const t = en.detail;
 ---
 
 <table class="hooks-table" data-testid="hooks-table">
-  <caption class="visually-hidden">Hook events and matchers</caption>
+  <caption class="visually-hidden">{t.hooksCaption}</caption>
   <thead>
     <tr>
-      <th scope="col">Event</th>
-      <th scope="col">Matcher</th>
-      <th scope="col">Type</th>
-      <th scope="col">Command</th>
+      <th scope="col">{t.hooksColumns.event}</th>
+      <th scope="col">{t.hooksColumns.matcher}</th>
+      <th scope="col">{t.hooksColumns.type}</th>
+      <th scope="col">{t.hooksColumns.command}</th>
     </tr>
   </thead>
   <tbody>
@@ -23,9 +25,9 @@ const { rows } = Astro.props;
       rows.map((row) => (
         <tr>
           <td>{row.event}</td>
-          <td>{row.matcher ? <code>{row.matcher}</code> : 'all'}</td>
+          <td>{row.matcher ? <code>{row.matcher}</code> : t.hooksAllMatchers}</td>
           <td>{row.type}</td>
-          <td>{row.command ? <code>{row.command}</code> : '—'}</td>
+          <td>{row.command ? <code>{row.command}</code> : t.hooksNoCommand}</td>
         </tr>
       ))
     }

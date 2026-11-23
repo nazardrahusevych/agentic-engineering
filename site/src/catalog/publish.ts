@@ -17,6 +17,7 @@ export function toCatalogEntry(artifact: Artifact): CatalogEntry {
     sourceUrl: artifact.sourceUrl,
     detailUrl: artifact.detailUrl,
     install: artifact.install,
+    dependencies: artifact.dependencies,
   };
 }
 

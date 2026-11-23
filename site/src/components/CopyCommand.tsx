@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'react';
+import { en } from '../i18n/en.ts';
 
 interface Props {
   command: string;
@@ -41,7 +42,7 @@ export default function CopyCommand({ command, label, context, showCommand = fal
   };
 
   return (
-    <div class="copy-command">
+    <div className="copy-command">
       {state === 'manual' ? (
         <>
           <input
@@ -49,22 +50,22 @@ export default function CopyCommand({ command, label, context, showCommand = fal
             type="text"
             readOnly
             value={command}
-            aria-label={`${label}${context ? ` ${context}` : ''}: command to copy`}
+            aria-label={en.copy.fieldLabel(context ? `${label} ${context}` : label)}
             onFocus={(event) => event.currentTarget.select()}
           />
-          <span class="copy-hint">Press Ctrl+C / ⌘C to copy</span>
+          <span className="copy-hint">{en.copy.manualHint}</span>
         </>
       ) : (
         <>
           {showCommand && <code>{command}</code>}
-          <button type="button" class="secondary" onClick={copy}>
+          <button type="button" className="secondary" onClick={copy}>
             {label}
-            {context && <span class="visually-hidden"> {context}</span>}
+            {context && <span className="visually-hidden"> {context}</span>}
           </button>
         </>
       )}
-      <span class="copy-status" role="status" aria-live="polite">
-        {state === 'copied' ? 'Copied' : ''}
+      <span className="copy-status" role="status" aria-live="polite">
+        {state === 'copied' ? en.copy.copied : ''}
       </span>
     </div>
   );

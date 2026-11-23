@@ -5,34 +5,89 @@
   "description": "Every plugin, skill, agent, command, hooks configuration and MCP server of the agentic-engineering Claude Code marketplace.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["$schema", "schemaVersion", "marketplace", "commit", "commitDate", "builtAt", "entries"],
+  "required": [
+    "$schema",
+    "schemaVersion",
+    "marketplace",
+    "commit",
+    "commitDate",
+    "builtAt",
+    "entries"
+  ],
   "properties": {
-    "$schema": { "type": "string", "format": "uri" },
-    "schemaVersion": { "const": 1 },
+    "$schema": {
+      "type": "string",
+      "format": "uri"
+    },
+    "schemaVersion": {
+      "const": 1
+    },
     "marketplace": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["name", "description", "owner", "addCommand", "url"],
+      "required": [
+        "name",
+        "description",
+        "owner",
+        "addCommand",
+        "url"
+      ],
       "properties": {
-        "name": { "type": "string", "minLength": 1 },
-        "description": { "type": "string" },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string"
+        },
         "owner": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["name", "url"],
+          "required": [
+            "name",
+            "url"
+          ],
           "properties": {
-            "name": { "type": "string" },
-            "url": { "type": ["string", "null"], "format": "uri" }
+            "name": {
+              "type": "string"
+            },
+            "url": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uri"
+            }
           }
         },
-        "addCommand": { "type": "string", "pattern": "^/plugin marketplace add " },
-        "url": { "type": "string", "format": "uri" }
+        "addCommand": {
+          "type": "string",
+          "pattern": "^/plugin marketplace add "
+        },
+        "url": {
+          "type": "string",
+          "format": "uri"
+        }
       }
     },
-    "commit": { "type": "string", "description": "Git commit the catalog was built from, or \"unknown\"." },
-    "commitDate": { "type": "string", "format": "date-time" },
-    "builtAt": { "type": "string", "format": "date-time" },
-    "entries": { "type": "array", "items": { "$ref": "#/$defs/entry" } }
+    "commit": {
+      "type": "string",
+      "description": "Git commit the catalog was built from, or \"unknown\"."
+    },
+    "commitDate": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "builtAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "entries": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/entry"
+      }
+    }
   },
   "$defs": {
     "entry": {
@@ -50,24 +105,77 @@
         "path",
         "sourceUrl",
         "detailUrl",
-        "install"
+        "install",
+        "dependencies"
       ],
       "properties": {
         "id": {
           "type": "string",
           "description": "<plugin> for plugins, <plugin>:<name> for components, <plugin>:hooks for a plugin's hooks."
         },
-        "type": { "enum": ["plugin", "skill", "agent", "command", "hooks", "mcp"] },
-        "name": { "type": "string", "minLength": 1 },
-        "plugin": { "type": "string", "minLength": 1 },
-        "pluginVersion": { "type": ["string", "null"] },
-        "description": { "type": "string" },
-        "tags": { "type": "array", "items": { "type": "string" } },
-        "category": { "type": ["string", "null"] },
-        "path": { "type": "string", "description": "Path in the repository." },
-        "sourceUrl": { "type": "string", "format": "uri" },
-        "detailUrl": { "type": "string", "format": "uri" },
-        "install": { "type": "string", "pattern": "^/plugin install \\S+@\\S+$" }
+        "type": {
+          "enum": [
+            "plugin",
+            "skill",
+            "agent",
+            "command",
+            "workflow",
+            "hooks",
+            "mcp"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "plugin": {
+          "type": "string",
+          "minLength": 1
+        },
+        "pluginVersion": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "description": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "category": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "path": {
+          "type": "string",
+          "description": "Path in the repository."
+        },
+        "sourceUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "detailUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "install": {
+          "type": "string",
+          "pattern": "^/plugin install \\S+@\\S+$"
+        },
+        "dependencies": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Plugins this plugin depends on, as name or name@marketplace; empty for components."
+        }
       }
     }
   }

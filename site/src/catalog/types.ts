@@ -2,7 +2,7 @@ import type { BuildInfo } from './build-info.ts';
 
 export type { BuildInfo } from './build-info.ts';
 
-export type ArtifactType = 'plugin' | 'skill' | 'agent' | 'command' | 'hooks' | 'mcp';
+export type ArtifactType = 'plugin' | 'skill' | 'agent' | 'command' | 'workflow' | 'hooks' | 'mcp';
 
 /** One public catalog entry (AC-4, AC-30). */
 export interface CatalogEntry {
@@ -22,6 +22,8 @@ export interface CatalogEntry {
   detailUrl: string;
   /** `/plugin install <plugin>@<marketplace>`. */
   install: string;
+  /** Plugins this plugin depends on (`name` or `name@marketplace`); empty for components. */
+  dependencies: string[];
 }
 
 export interface MarketplaceInfo {
@@ -65,6 +67,14 @@ export interface McpServerInfo {
   url: string | null;
 }
 
+export interface WorkflowInfo {
+  phases: string[];
+  /** The command that runs it: `/<plugin>:<name>`. */
+  command: string;
+  /** The workflow source, shown as text only. */
+  source: string;
+}
+
 export interface PluginInfo {
   license: string | null;
   author: { name: string; url: string | null } | null;
@@ -84,6 +94,7 @@ export interface Artifact extends CatalogEntry {
   files: RepoFile[];
   hooks?: HookRow[];
   mcp?: McpServerInfo;
+  workflow?: WorkflowInfo;
   pluginInfo?: PluginInfo;
 }
 

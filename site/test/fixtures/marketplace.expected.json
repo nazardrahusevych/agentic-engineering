@@ -9,6 +9,7 @@
   { "id": "beta:planner", "type": "agent" },
   { "id": "alpha:reviewer", "type": "agent" },
   { "id": "alpha:deploy-check", "type": "command" },
+  { "id": "alpha:triage", "type": "workflow" },
   { "id": "alpha:hooks", "type": "hooks" },
   { "id": "alpha:docs-search", "type": "mcp" }
 ]

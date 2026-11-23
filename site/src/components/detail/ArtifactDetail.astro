@@ -1,18 +1,28 @@
 ---
 import type { Artifact } from '../../catalog/types.ts';
+import { en } from '../../i18n/en.ts';
 import CopyCommand from '../CopyCommand.tsx';
 import HooksTable from './HooksTable.astro';
+
+export interface PluginRelation {
+  name: string;
+  /** Detail page of a plugin of this marketplace; null for one outside it. */
+  href: string | null;
+}
 
 interface Props {
   artifact: Artifact;
   /** The other artifacts of the same plugin, in landing order. */
   siblings: Artifact[];
   base: string;
+  /** Plugin pages only (SPEC-3 AC-4). */
+  relations?: { dependsOn: PluginRelation[]; usedBy: PluginRelation[] };
 }
 
-const { artifact, siblings, base } = Astro.props;
+const { artifact, siblings, base, relations } = Astro.props;
 const info = artifact.pluginInfo;
 const pluginHref = `${base}plugins/${artifact.plugin}/`;
+const t = en.detail;
 ---
 
 <article class="detail" data-testid="artifact-detail" data-id={artifact.id}>
@@ -23,8 +33,8 @@ const pluginHref = `${base}plugins/${artifact.plugin}/`;
       {
         artifact.type !== 'plugin' && (
           <span>
-            in <a href={pluginHref}>{artifact.plugin}</a>
-            {artifact.pluginVersion && <> v{artifact.pluginVersion}</>}
+            {t.inPlugin} <a href={pluginHref}>{artifact.plugin}</a>
+            {artifact.pluginVersion && <> {t.version(artifact.pluginVersion)}</>}
           </span>
         )
       }
@@ -34,25 +44,23 @@ const pluginHref = `${base}plugins/${artifact.plugin}/`;
   </header>
 
   <section class="detail-section" aria-labelledby="install-heading">
-    <h2 id="install-heading">Install</h2>
-    <CopyCommand client:visible command={artifact.install} label="Copy" context="install command" showCommand />
+    <h2 id="install-heading">{t.installHeading}</h2>
+    <CopyCommand client:visible command={artifact.install} label={t.copy} context={t.copyContext} showCommand />
     <p>
-      <a href={artifact.sourceUrl} target="_blank" rel="noopener noreferrer" data-testid="source-link">
-        View the source on GitHub
-      </a>
+      <a href={artifact.sourceUrl} target="_blank" rel="noopener noreferrer" data-testid="source-link">{t.viewSource}</a>
     </p>
   </section>
 
   {
     info && (
       <section class="detail-section" aria-labelledby="plugin-heading">
-        <h2 id="plugin-heading">Plugin</h2>
+        <h2 id="plugin-heading">{t.pluginHeading}</h2>
         <dl class="facts" data-testid="plugin-facts">
-          <dt>Version</dt>
-          <dd>{artifact.pluginVersion ?? 'not set'}</dd>
-          <dt>License</dt>
-          <dd>{info.license ?? 'not set'}</dd>
-          <dt>Author</dt>
+          <dt>{t.facts.version}</dt>
+          <dd>{artifact.pluginVersion ?? t.facts.notSet}</dd>
+          <dt>{t.facts.license}</dt>
+          <dd>{info.license ?? t.facts.notSet}</dd>
+          <dt>{t.facts.author}</dt>
           <dd>
             {info.author ? (
               info.author.url ? (
@@ -63,24 +71,24 @@ const pluginHref = `${base}plugins/${artifact.plugin}/`;
                 info.author.name
               )
             ) : (
-              'not set'
+              t.facts.notSet
             )}
           </dd>
           {artifact.category && (
             <>
-              <dt>Category</dt>
+              <dt>{t.facts.category}</dt>
               <dd>{artifact.category}</dd>
             </>
           )}
           {artifact.tags.length > 0 && (
             <>
-              <dt>Tags</dt>
+              <dt>{t.facts.tags}</dt>
               <dd>{artifact.tags.join(', ')}</dd>
             </>
           )}
           {info.otherComponents.length > 0 && (
             <>
-              <dt>Also contains</dt>
+              <dt>{t.facts.alsoContains}</dt>
               <dd>{info.otherComponents.join(', ')}</dd>
             </>
           )}
@@ -90,10 +98,71 @@ const pluginHref = `${base}plugins/${artifact.plugin}/`;
   }
 
   {
+    relations && (
+      <section class="detail-section" aria-labelledby="relations-heading">
+        <h2 id="relations-heading">{t.relationsHeading}</h2>
+        {[
+          { key: 'depends-on', heading: t.dependsOn, items: relations.dependsOn },
+          { key: 'used-by', heading: t.usedBy, items: relations.usedBy },
+        ].map((group) => (
+          <div data-testid={group.key}>
+            <h3>{group.heading}</h3>
+            {group.items.length === 0 ? (
+              <p>{t.noDependencies}</p>
+            ) : (
+              <ul class="sibling-list">
+                {group.items.map((item) =>
+                  item.href ? (
+                    <li>
+                      <a href={item.href}>{item.name}</a>
+                    </li>
+                  ) : (
+                    <li>
+                      {item.name} {t.notInMarketplace}
+                    </li>
+                  ),
+                )}
+              </ul>
+            )}
+          </div>
+        ))}
+      </section>
+    )
+  }
+
+  {
     artifact.bodyHtml !== null && (
       <section class="detail-section" aria-labelledby="body-heading">
-        <h2 id="body-heading">Content</h2>
+        <h2 id="body-heading">{t.contentHeading}</h2>
         <div class="markdown-body" data-testid="artifact-body" set:html={artifact.bodyHtml} />
+      </section>
+    )
+  }
+
+  {
+    artifact.workflow && (
+      <section class="detail-section" aria-labelledby="workflow-heading">
+        <h2 id="workflow-heading">{t.workflowHeading}</h2>
+        <dl class="facts" data-testid="workflow-info">
+          <dt>{t.workflowFacts.run}</dt>
+          <dd>
+            <code>{artifact.workflow.command}</code>
+          </dd>
+          {artifact.workflow.phases.length > 0 && (
+            <>
+              <dt>{t.workflowFacts.phases}</dt>
+              <dd>
+                <ol class="phase-list" data-testid="workflow-phases">
+                  {artifact.workflow.phases.map((phase) => (
+                    <li>{phase}</li>
+                  ))}
+                </ol>
+              </dd>
+            </>
+          )}
+        </dl>
+        <h3>{t.workflowSource}</h3>
+        <pre data-testid="workflow-source"><code>{artifact.workflow.source}</code></pre>
       </section>
     )
   }
@@ -101,7 +170,7 @@ const pluginHref = `${base}plugins/${artifact.plugin}/`;
   {
     artifact.hooks && (
       <section class="detail-section" aria-labelledby="hooks-heading">
-        <h2 id="hooks-heading">Hooks</h2>
+        <h2 id="hooks-heading">{t.hooksHeading}</h2>
         <HooksTable rows={artifact.hooks} />
       </section>
     )
@@ -110,17 +179,17 @@ const pluginHref = `${base}plugins/${artifact.plugin}/`;
   {
     artifact.mcp && (
       <section class="detail-section" aria-labelledby="mcp-heading">
-        <h2 id="mcp-heading">MCP server</h2>
+        <h2 id="mcp-heading">{t.mcpHeading}</h2>
         <dl class="facts" data-testid="mcp-info">
-          <dt>Name</dt>
+          <dt>{t.mcpFacts.name}</dt>
           <dd>
             <code>{artifact.mcp.name}</code>
           </dd>
-          <dt>Transport</dt>
+          <dt>{t.mcpFacts.transport}</dt>
           <dd>{artifact.mcp.transport}</dd>
           {artifact.mcp.command && (
             <>
-              <dt>Command</dt>
+              <dt>{t.mcpFacts.command}</dt>
               <dd>
                 <code>{[artifact.mcp.command, ...artifact.mcp.args].join(' ')}</code>
               </dd>
@@ -128,7 +197,7 @@ const pluginHref = `${base}plugins/${artifact.plugin}/`;
           )}
           {artifact.mcp.url && (
             <>
-              <dt>URL</dt>
+              <dt>{t.mcpFacts.url}</dt>
               <dd>
                 <code>{artifact.mcp.url}</code>
               </dd>
@@ -142,7 +211,7 @@ const pluginHref = `${base}plugins/${artifact.plugin}/`;
   {
     info?.changelogHtml && (
       <section class="detail-section" aria-labelledby="changelog-heading">
-        <h2 id="changelog-heading">Changelog</h2>
+        <h2 id="changelog-heading">{t.changelogHeading}</h2>
         <div class="markdown-body" data-testid="changelog" set:html={info.changelogHtml} />
       </section>
     )
@@ -151,7 +220,7 @@ const pluginHref = `${base}plugins/${artifact.plugin}/`;
   {
     artifact.files.length > 0 && (
       <section class="detail-section" aria-labelledby="files-heading">
-        <h2 id="files-heading">Files</h2>
+        <h2 id="files-heading">{t.filesHeading}</h2>
         <ul class="file-list" data-testid="file-list">
           {artifact.files.map((file) => (
             <li>
@@ -166,10 +235,10 @@ const pluginHref = `${base}plugins/${artifact.plugin}/`;
   }
 
   <section class="detail-section" aria-labelledby="siblings-heading">
-    <h2 id="siblings-heading">Other artifacts in {artifact.plugin}</h2>
+    <h2 id="siblings-heading">{t.siblingsHeading(artifact.plugin)}</h2>
     {
       siblings.length === 0 ? (
-        <p>None.</p>
+        <p>{t.noSiblings}</p>
       ) : (
         <ul class="sibling-list" data-testid="sibling-list">
           {siblings.map((sibling) => (

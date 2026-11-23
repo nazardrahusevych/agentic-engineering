@@ -1,4 +1,5 @@
 ---
+import { en } from '../i18n/en.ts';
 import { getCatalog } from '../lib/catalog-data.ts';
 
 const catalog = getCatalog();
@@ -12,7 +13,7 @@ const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL :
 <footer class="site-footer">
   <div class="container">
     <p data-testid="build-info">
-      Built from
+      {en.footer.builtFrom}{' '}
       {
         known ? (
           <a href={`https://github.com/${catalog.repo}/commit/${commit}`} rel="noopener noreferrer">
@@ -21,13 +22,13 @@ const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL :
         ) : (
           <code>{short}</code>
         )
-      }
+      }{' '}
       (<time datetime={commitDate}>{date}</time>)
     </p>
     <p>
-      <a href={`${base}catalog.json`}>catalog.json</a> ·
-      <a href={`${base}llms.txt`}>llms.txt</a> ·
-      <a href={`https://github.com/${catalog.repo}`} rel="noopener noreferrer">Source on GitHub</a>
+      <a href={`${base}catalog.json`}>{en.footer.catalogJson}</a> ·
+      <a href={`${base}llms.txt`}>{en.footer.llmsTxt}</a> ·
+      <a href={`https://github.com/${catalog.repo}`} rel="noopener noreferrer">{en.footer.source}</a>
     </p>
   </div>
 </footer>

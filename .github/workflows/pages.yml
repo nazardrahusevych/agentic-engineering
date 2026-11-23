@@ -1,11 +1,13 @@
-name: Pages
+name: Site
 
 # Builds the catalog site from the repository and deploys it to GitHub Pages.
-# - push to main: build, test and deploy (AC-1)
-# - pull request: build and test only, never deploy (AC-2)
-# - manual run with a ref: build and deploy that tag, branch or commit — the rollback path (AC-8).
+# Each stage is its own job, so the pull-request checks show unit tests, build and e2e separately (SPEC-3 AC-9).
+# - push to main: test, build and deploy (SPEC-1 AC-1)
+# - pull request: test and build only, never deploy (SPEC-1 AC-2)
+# - manual run with a ref: build and deploy that tag, branch or commit — the rollback path (SPEC-1 AC-8).
 #   Run it "Use workflow from: main"; the github-pages environment only accepts the default branch.
-# A failed build skips the deploy job, so the previous deployment stays live (AC-7).
+# Any failed job skips the deploy, so the previous deployment stays live (SPEC-1 AC-7).
+# The plugin checks run in the separate Validate workflow.
 
 on:
   push:
@@ -30,9 +32,10 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-  build:
+  site-unit:
+    name: Site / typecheck and unit tests
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     permissions:
       contents: read
     defaults:
@@ -59,14 +62,32 @@ jobs:
       - name: Unit tests
         run: npm test
 
+  site-build:
+    name: Site / build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: site
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.ref || '' }}
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+
+      - name: Install
+        run: npm ci
+
       - name: Build the catalog site
         run: npm run build
-
-      - name: Install Chromium for the e2e tests
-        run: npx playwright install --with-deps chromium
-
-      - name: End-to-end tests
-        run: npm run test:e2e
 
       - name: Upload the Pages artifact
         if: github.event_name != 'pull_request'
@@ -74,8 +95,39 @@ jobs:
         with:
           path: site/dist
 
+  site-e2e:
+    name: Site / end-to-end tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: site
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.ref || '' }}
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      - name: Install Chromium for the e2e tests
+        run: npx playwright install --with-deps chromium
+
+      - name: End-to-end tests
+        run: npm run test:e2e
+
   deploy:
-    needs: build
+    name: Site / deploy
+    needs: [site-unit, site-build, site-e2e]
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 10

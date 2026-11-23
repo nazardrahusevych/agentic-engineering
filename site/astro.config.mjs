@@ -1,6 +1,6 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
-import preact from '@astrojs/preact';
+import react from '@astrojs/react';
 
 export default defineConfig({
   site: 'https://nazardrahusevych.github.io',
@@ -8,5 +8,5 @@ export default defineConfig({
   trailingSlash: 'always',
   output: 'static',
   build: { format: 'directory' },
-  integrations: [preact()],
+  integrations: [react()],
 });

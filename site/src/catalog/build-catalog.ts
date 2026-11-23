@@ -40,6 +40,7 @@ function toMarketplaceInfo(file: MarketplaceFile, repo: string): MarketplaceInfo
 
 interface PluginContext {
   name: string;
+  dependencies: string[];
   version: string | null;
   tags: string[];
   category: string | null;
@@ -92,6 +93,7 @@ export function buildCatalog(options: BuildCatalogOptions): BuildResult {
       sourceUrl: sourceUrl(repo, commit, fields.path, fields.isDir),
       detailUrl: url(path),
       install: plugin.install,
+      dependencies: fields.type === 'plugin' ? plugin.dependencies : [],
       detailPath: path,
       bodyHtml: fields.bodyHtml,
       bodyText: fields.bodyText,
@@ -122,6 +124,7 @@ export function buildCatalog(options: BuildCatalogOptions): BuildResult {
       warnings.push(`plugin "${entry.name}" has an external source; only its marketplace entry is listed`);
       const plugin: PluginContext = {
         name: entry.name,
+        dependencies: [],
         version: typeof entry.version === 'string' ? entry.version : null,
         tags: normalizeTags(entry.tags),
         category,
@@ -155,6 +158,7 @@ export function buildCatalog(options: BuildCatalogOptions): BuildResult {
     }
     const plugin: PluginContext = {
       name: entry.name,
+      dependencies: manifest.dependencies,
       version: manifest.version,
       tags: normalizeTags(entry.tags, manifest.keywords),
       category,
@@ -224,7 +228,18 @@ export function buildCatalog(options: BuildCatalogOptions): BuildResult {
     });
     if (draft.hooks) artifact.hooks = draft.hooks;
     if (draft.mcp) artifact.mcp = draft.mcp;
+    if (draft.workflow) artifact.workflow = draft.workflow;
     return artifact;
+  }
+
+  // Dependencies that name no plugin of this marketplace are shown as plain text; say so at build time.
+  const pluginNames = new Set(marketplace.plugins.map((entry) => entry.name));
+  for (const artifact of artifacts) {
+    for (const dep of artifact.dependencies) {
+      if (!dep.includes('@') && !pluginNames.has(dep)) {
+        warnings.push(`plugin "${artifact.plugin}" depends on "${dep}", which is not in ${MARKETPLACE_PATH}`);
+      }
+    }
   }
 
   for (const dir of findUnlistedPluginDirs(root, listedDirs, marketplace.pluginRoot)) {

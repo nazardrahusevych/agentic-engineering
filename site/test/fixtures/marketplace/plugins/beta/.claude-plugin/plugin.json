@@ -2,5 +2,8 @@
   "name": "beta",
   "version": "0.3.0",
   "description": "Workflow tools for writing specs and planning work",
-  "license": "Apache-2.0"
+  "license": "Apache-2.0",
+  "dependencies": [
+    "alpha"
+  ]
 }

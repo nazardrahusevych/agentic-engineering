@@ -11,9 +11,9 @@ const ids = (page: Page) => cards(page).evaluateAll((nodes) => nodes.map((node) 
 test.describe('filters and URL state', () => {
   test('AC-23: every option shows a count that follows the query', async ({ page }) => {
     await page.goto('./');
-    await expect(cards(page)).toHaveCount(12);
+    await expect(cards(page)).toHaveCount(13);
     await expect(count(page, 'type', 'skill')).toHaveText('(5)');
-    await expect(count(page, 'plugin', 'alpha')).toHaveText('(7)');
+    await expect(count(page, 'plugin', 'alpha')).toHaveText('(8)');
     await expect(count(page, 'category', 'workflow')).toHaveText('(5)');
     await expect(count(page, 'tag', 'pr')).toHaveText('(1)');
 

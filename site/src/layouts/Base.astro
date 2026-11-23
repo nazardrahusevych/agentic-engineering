@@ -1,5 +1,6 @@
 ---
 import Footer from '../components/Footer.astro';
+import { en } from '../i18n/en.ts';
 import '../styles/global.css';
 
 interface Props {
@@ -21,18 +22,18 @@ const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL :
     <meta name="description" content={description} />
     {noindex && <meta name="robots" content="noindex" />}
     <title>{title}</title>
-    <link rel="alternate" type="application/json" href={`${base}catalog.json`} title="Catalog (JSON)" />
+    <link rel="alternate" type="application/json" href={`${base}catalog.json`} title={en.site.catalogJsonTitle} />
   </head>
   <body>
-    <a class="skip-link" href="#main">Skip to content</a>
+    <a class="skip-link" href="#main">{en.site.skipLink}</a>
     <header class="site-header">
       <div class="container">
-        <a class="brand" href={base}>agentic-engineering</a>
-        <span class="tagline">Claude Code plugin catalog</span>
+        <a class="brand" href={base}>{en.site.name}</a>
+        <span class="tagline">{en.site.tagline}</span>
       </div>
     </header>
     <noscript>
-      <p class="container noscript">JavaScript is required to search the catalog. Every artifact still has its own page.</p>
+      <p class="container noscript">{en.site.noscript}</p>
     </noscript>
     <main id="main" class="container" tabindex="-1">
       <slot />
