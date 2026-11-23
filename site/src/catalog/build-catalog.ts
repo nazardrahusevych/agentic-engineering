@@ -9,7 +9,8 @@ import {
   type MarketplaceEntry,
   type MarketplaceFile,
 } from './marketplace.ts';
-import { compareText, detailPath, sourceUrl, TYPE_ORDER } from './paths.ts';
+import { landingCompare } from '../search/browse.ts';
+import { detailPath, sourceUrl } from './paths.ts';
 import { readPlugin, type ReadContext } from './plugin.ts';
 import { CatalogBuildError, ProblemError, type CatalogProblem } from './problems.ts';
 import type { Artifact, BuildCatalogOptions, BuildResult, MarketplaceInfo } from './types.ts';
@@ -25,13 +26,6 @@ function normalizeTags(...lists: unknown[]): string[] {
     }
   }
   return out;
-}
-
-/** Landing order (AC-15): type, then name, then plugin. T6 replaces it with search/browse.ts#landingCompare. */
-function landingCompare(a: Artifact, b: Artifact): number {
-  return (
-    TYPE_ORDER.indexOf(a.type) - TYPE_ORDER.indexOf(b.type) || compareText(a.name, b.name) || compareText(a.plugin, b.plugin)
-  );
 }
 
 function toMarketplaceInfo(file: MarketplaceFile, repo: string): MarketplaceInfo {
