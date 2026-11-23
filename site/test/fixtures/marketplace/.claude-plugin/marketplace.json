@@ -1,0 +1,21 @@
+{
+  "name": "agentic-engineering",
+  "owner": { "name": "Fixture Owner" },
+  "description": "Fixture marketplace for the catalog site tests",
+  "plugins": [
+    {
+      "name": "alpha",
+      "source": "./plugins/alpha",
+      "description": "Quality tools: code review, security audit, deploy checks",
+      "category": "quality",
+      "tags": ["review", "security"]
+    },
+    {
+      "name": "beta",
+      "source": "./plugins/beta",
+      "description": "Workflow tools for writing specs and planning work",
+      "category": "workflow",
+      "tags": ["specs"]
+    }
+  ]
+}

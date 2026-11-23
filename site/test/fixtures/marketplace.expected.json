@@ -1,0 +1,14 @@
+[
+  { "id": "alpha", "type": "plugin" },
+  { "id": "beta", "type": "plugin" },
+  { "id": "alpha:code-review", "type": "skill" },
+  { "id": "beta:code-review", "type": "skill" },
+  { "id": "alpha:security-audit", "type": "skill" },
+  { "id": "beta:spec-writer", "type": "skill" },
+  { "id": "beta:unsafe-markdown", "type": "skill" },
+  { "id": "beta:planner", "type": "agent" },
+  { "id": "alpha:reviewer", "type": "agent" },
+  { "id": "alpha:deploy-check", "type": "command" },
+  { "id": "alpha:hooks", "type": "hooks" },
+  { "id": "alpha:docs-search", "type": "mcp" }
+]
