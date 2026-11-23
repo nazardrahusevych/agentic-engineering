@@ -1,29 +1,46 @@
 ---
 import type { GetStaticPaths } from 'astro';
 import type { Artifact } from '../../../catalog/types.ts';
-import ArtifactDetail from '../../../components/detail/ArtifactDetail.astro';
+import ArtifactDetail, { type PluginRelation } from '../../../components/detail/ArtifactDetail.astro';
+import { en } from '../../../i18n/en.ts';
 import Base from '../../../layouts/Base.astro';
 import { getCatalog } from '../../../lib/catalog-data.ts';
 
 export const getStaticPaths = (() => {
   const { artifacts } = getCatalog();
-  return artifacts
-    .filter((artifact) => artifact.type === 'plugin')
-    .map((artifact) => ({
-      params: { plugin: artifact.plugin },
-      props: { artifact, siblings: artifacts.filter((other) => other.plugin === artifact.plugin && other !== artifact) },
-    }));
+  const plugins = artifacts.filter((artifact) => artifact.type === 'plugin');
+  return plugins.map((artifact) => ({
+    params: { plugin: artifact.plugin },
+    props: {
+      artifact,
+      siblings: artifacts.filter((other) => other.plugin === artifact.plugin && other !== artifact),
+      dependsOn: artifact.dependencies,
+      usedBy: plugins.filter((other) => other.dependencies.includes(artifact.plugin)).map((other) => other.plugin),
+    },
+  }));
 }) satisfies GetStaticPaths;
 
 interface Props {
   artifact: Artifact;
   siblings: Artifact[];
+  dependsOn: string[];
+  usedBy: string[];
 }
 
-const { artifact, siblings } = Astro.props;
+const { artifact, siblings, dependsOn, usedBy } = Astro.props;
 const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+const known = new Set(getCatalog().artifacts.filter((a) => a.type === 'plugin').map((a) => a.plugin));
+const relation = (name: string): PluginRelation => ({
+  name,
+  href: known.has(name) ? `${base}plugins/${name}/` : null,
+});
 ---
 
-<Base title={`${artifact.name} (plugin) — agentic-engineering`} description={artifact.description}>
-  <ArtifactDetail artifact={artifact} siblings={siblings} base={base} />
+<Base title={en.detail.pageTitle(artifact.name, artifact.type, artifact.plugin)} description={artifact.description}>
+  <ArtifactDetail
+    artifact={artifact}
+    siblings={siblings}
+    base={base}
+    relations={{ dependsOn: dependsOn.map(relation), usedBy: usedBy.map(relation) }}
+  />
 </Base>

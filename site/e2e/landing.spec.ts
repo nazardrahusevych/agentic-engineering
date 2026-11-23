@@ -11,7 +11,7 @@ test.describe('landing page', () => {
       nodes.map((node) => ({ id: node.getAttribute('data-id'), type: node.getAttribute('data-type') })),
     );
     expect(actual).toEqual(expected);
-    await expect(page.getByTestId('result-count')).toHaveText('12 artifacts');
+    await expect(page.getByTestId('result-count')).toHaveText('13 artifacts');
   });
 
   test('AC-19: a card shows badge, name, plugin, clamped description, up to 3 tags and the copy button', async ({ page }) => {

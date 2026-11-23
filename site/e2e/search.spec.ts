@@ -11,7 +11,7 @@ async function ready(page: Page, path = './') {
 test.describe('search', () => {
   test('AC-10: results update while typing, with no requests after the initial load', async ({ page }) => {
     await ready(page);
-    await expect(cards(page)).toHaveCount(12);
+    await expect(cards(page)).toHaveCount(13);
     const requests: string[] = [];
     page.on('request', (request) => requests.push(request.url()));
 

@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'preact/hooks';
+import { useEffect, useState } from 'react';
 import type { CatalogDocument } from '../../catalog/types.ts';
+import { en } from '../../i18n/en.ts';
 import { hasActiveFilters } from '../../search/browse.ts';
 import { loadIndex, type SearchIndex } from '../../search/engine.ts';
 import { requestIssueUrl } from '../../search/request-link.ts';
@@ -46,15 +47,15 @@ export default function SearchApp({ base, repo }: Props) {
   const { data, error } = useCatalogData(base);
   if (error) {
     return (
-      <p class="status" role="alert">
-        The catalog could not be loaded. Reload the page to try again.
+      <p className="status" role="alert">
+        {en.search.loadError}
       </p>
     );
   }
   if (!data) {
     return (
-      <p class="status" role="status">
-        Loading the catalog…
+      <p className="status" role="status">
+        {en.search.loading}
       </p>
     );
   }
@@ -69,13 +70,13 @@ function Browser({ data, base, repo }: { data: Data; base: string; repo: string 
   const filtersSet = hasActiveFilters(state.filters);
 
   return (
-    <div class="search-layout">
+    <div className="search-layout">
       <aside>
         <FilterPanel counts={counts} onToggle={toggleFilter} />
       </aside>
       <section aria-labelledby="results-heading">
-        <form class="search-box" role="search" onSubmit={(event) => event.preventDefault()}>
-          <label for="catalog-search">Search the catalog</label>
+        <form className="search-box" role="search" onSubmit={(event) => event.preventDefault()}>
+          <label htmlFor="catalog-search">{en.search.label}</label>
           <input
             id="catalog-search"
             ref={inputRef}
@@ -84,20 +85,20 @@ function Browser({ data, base, repo }: { data: Data; base: string; repo: string 
             value={state.q}
             maxLength={200}
             autoComplete="off"
-            spellcheck={false}
+            spellCheck={false}
             aria-describedby="search-hint"
-            placeholder="e.g. a skill for reviewing pull requests"
-            onInput={(event) => setQuery(event.currentTarget.value)}
+            placeholder={en.search.placeholder}
+            onChange={(event) => setQuery(event.currentTarget.value)}
           />
-          <p id="search-hint" class="hint">
-            Press <kbd>/</kbd> to search from anywhere on the page.
+          <p id="search-hint" className="hint">
+            {en.search.hintBefore} <kbd>{en.search.hintKey}</kbd> {en.search.hintAfter}
           </p>
         </form>
-        <h2 id="results-heading" class="visually-hidden">
-          Results
+        <h2 id="results-heading" className="visually-hidden">
+          {en.search.resultsHeading}
         </h2>
-        <p class="result-count" role="status" aria-live="polite" data-testid="result-count">
-          {results.length === 1 ? '1 artifact' : `${results.length} artifacts`}
+        <p className="result-count" role="status" aria-live="polite" data-testid="result-count">
+          {en.search.count(results.length)}
         </p>
         {results.length === 0 ? (
           <EmptyState
@@ -107,7 +108,7 @@ function Browser({ data, base, repo }: { data: Data; base: string; repo: string 
             requestUrl={requestIssueUrl(repo, state)}
           />
         ) : (
-          <ul class="cards">
+          <ul className="cards">
             {results.map((entry) => (
               <li key={`${entry.type}/${entry.id}`}>
                 <ResultCard entry={entry} base={base} />

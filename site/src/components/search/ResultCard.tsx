@@ -1,4 +1,5 @@
 import type { CatalogEntry } from '../../catalog/types.ts';
+import { en } from '../../i18n/en.ts';
 import { entryKey } from '../../search/browse.ts';
 import CopyCommand from '../CopyCommand.tsx';
 
@@ -13,34 +14,34 @@ const MAX_TAGS = 3;
 export default function ResultCard({ entry, base }: Props) {
   const href = `${base}${entryKey(entry)}`;
   return (
-    <article class="card" data-testid="result-card" data-id={entry.id} data-type={entry.type}>
-      <div class="meta">
-        <span class={`badge badge-${entry.type}`} data-testid="type-badge">
+    <article className="card" data-testid="result-card" data-id={entry.id} data-type={entry.type}>
+      <div className="meta">
+        <span className={`badge badge-${entry.type}`} data-testid="type-badge">
           {entry.type}
         </span>
         {entry.type !== 'plugin' && (
           <span data-testid="card-plugin">
-            in <strong>{entry.plugin}</strong>
+            {en.card.inPlugin} <strong>{entry.plugin}</strong>
           </span>
         )}
       </div>
       <h3>
         <a href={href}>{entry.name}</a>
       </h3>
-      <p class="description clamp-2" title={entry.description}>
+      <p className="description clamp-2" title={entry.description}>
         {entry.description}
       </p>
       {entry.tags.length > 0 && (
-        <ul class="tags" aria-label="Tags">
+        <ul className="tags" aria-label={en.card.tags}>
           {entry.tags.slice(0, MAX_TAGS).map((tag) => (
-            <li class="tag" key={tag}>
+            <li className="tag" key={tag}>
               {tag}
             </li>
           ))}
         </ul>
       )}
-      <div class="actions">
-        <CopyCommand command={entry.install} label="Copy install" context={`for ${entry.plugin}`} />
+      <div className="actions">
+        <CopyCommand command={entry.install} label={en.card.copyInstall} context={en.card.copyInstallContext(entry.plugin)} />
       </div>
     </article>
   );

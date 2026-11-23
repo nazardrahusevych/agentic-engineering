@@ -2,6 +2,7 @@
 import type { GetStaticPaths } from 'astro';
 import type { Artifact } from '../../../catalog/types.ts';
 import ArtifactDetail from '../../../components/detail/ArtifactDetail.astro';
+import { en } from '../../../i18n/en.ts';
 import Base from '../../../layouts/Base.astro';
 import { getCatalog } from '../../../lib/catalog-data.ts';
 
@@ -29,6 +30,6 @@ const { artifact, siblings } = Astro.props;
 const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
 ---
 
-<Base title={`${artifact.name} (${artifact.type} in ${artifact.plugin}) — agentic-engineering`} description={artifact.description}>
+<Base title={en.detail.pageTitle(artifact.name, artifact.type, artifact.plugin)} description={artifact.description}>
   <ArtifactDetail artifact={artifact} siblings={siblings} base={base} />
 </Base>
