@@ -1,4 +1,4 @@
-# Spec: Catalog site (MVP) | Spec ID: SPEC-1 | Status: approved
+# Spec: Catalog site (MVP) | Spec ID: SPEC-1 | Status: in-progress
 Supersedes: None
 Designs: None
 
