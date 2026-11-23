@@ -189,8 +189,19 @@ export function buildCatalog(options: BuildCatalogOptions): BuildResult {
     });
 
     const ids = new Map<string, string>();
+    const pages = new Map<string, string>();
     for (const draft of drafts) {
       const artifact = componentArtifact(plugin, draft);
+      const samePage = pages.get(artifact.detailPath);
+      if (samePage) {
+        // Same type and name in one plugin: both would need the same detail page URL.
+        problems.push({
+          path: draft.path,
+          reason: `duplicate ${draft.type} name "${draft.name}" in plugin "${plugin.name}" (also ${samePage})`,
+        });
+        continue;
+      }
+      pages.set(artifact.detailPath, draft.path);
       const previous = ids.get(artifact.id);
       if (previous) warnings.push(`id "${artifact.id}" is used by both a ${previous} and a ${draft.type}`);
       ids.set(artifact.id, draft.type);

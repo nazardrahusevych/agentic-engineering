@@ -46,6 +46,10 @@ describe('renderMarkdown (Untrusted inputs, AC-27)', () => {
     expect(out).not.toContain('href');
   });
 
+  it('shifts headings below the page heading', () => {
+    expect(renderMarkdown('# A\n\n## B\n\n##### E', ctx)).toBe('<h3>A</h3>\n<h4>B</h4>\n<h6>E</h6>');
+  });
+
   it('renders GFM tables', () => {
     const out = renderMarkdown('| a | b |\n|---|---|\n| 1 | 2 |\n', ctx);
     expect(out).toContain('<table>');

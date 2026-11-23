@@ -1,0 +1,33 @@
+---
+import type { HookRow } from '../../catalog/types.ts';
+
+interface Props {
+  rows: HookRow[];
+}
+
+const { rows } = Astro.props;
+---
+
+<table class="hooks-table" data-testid="hooks-table">
+  <caption class="visually-hidden">Hook events and matchers</caption>
+  <thead>
+    <tr>
+      <th scope="col">Event</th>
+      <th scope="col">Matcher</th>
+      <th scope="col">Type</th>
+      <th scope="col">Command</th>
+    </tr>
+  </thead>
+  <tbody>
+    {
+      rows.map((row) => (
+        <tr>
+          <td>{row.event}</td>
+          <td>{row.matcher ? <code>{row.matcher}</code> : 'all'}</td>
+          <td>{row.type}</td>
+          <td>{row.command ? <code>{row.command}</code> : '—'}</td>
+        </tr>
+      ))
+    }
+  </tbody>
+</table>

@@ -90,6 +90,18 @@ describe('buildCatalog failures (AC-6)', () => {
     ]);
   });
 
+  it('two components of one type and name in one plugin', async () => {
+    const problems = await problemsAfter([
+      ['plugins/alpha/agents/reviewer-copy.md', '---\nname: reviewer\ndescription: Twin.\n---\nBody\n'],
+    ]);
+    expect(problems).toEqual([
+      {
+        path: 'plugins/alpha/agents/reviewer.md',
+        reason: 'duplicate agent name "reviewer" in plugin "alpha" (also plugins/alpha/agents/reviewer-copy.md)',
+      },
+    ]);
+  });
+
   it('reports two broken files together', async () => {
     const problems = await problemsAfter([
       ['plugins/alpha/.mcp.json', '[not json'],

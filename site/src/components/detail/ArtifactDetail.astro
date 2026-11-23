@@ -1,0 +1,185 @@
+---
+import type { Artifact } from '../../catalog/types.ts';
+import CopyCommand from '../CopyCommand.tsx';
+import HooksTable from './HooksTable.astro';
+
+interface Props {
+  artifact: Artifact;
+  /** The other artifacts of the same plugin, in landing order. */
+  siblings: Artifact[];
+  base: string;
+}
+
+const { artifact, siblings, base } = Astro.props;
+const info = artifact.pluginInfo;
+const pluginHref = `${base}plugins/${artifact.plugin}/`;
+---
+
+<article class="detail" data-testid="artifact-detail" data-id={artifact.id}>
+  <header class="detail-header">
+    <div class="meta">
+      <span class={`badge badge-${artifact.type}`} data-testid="type-badge">{artifact.type}</span>
+      <code data-testid="artifact-id">{artifact.id}</code>
+      {
+        artifact.type !== 'plugin' && (
+          <span>
+            in <a href={pluginHref}>{artifact.plugin}</a>
+            {artifact.pluginVersion && <> v{artifact.pluginVersion}</>}
+          </span>
+        )
+      }
+    </div>
+    <h1>{artifact.name}</h1>
+    <p class="lead" data-testid="description">{artifact.description}</p>
+  </header>
+
+  <section class="detail-section" aria-labelledby="install-heading">
+    <h2 id="install-heading">Install</h2>
+    <CopyCommand client:visible command={artifact.install} label="Copy" context="install command" showCommand />
+    <p>
+      <a href={artifact.sourceUrl} target="_blank" rel="noopener noreferrer" data-testid="source-link">
+        View the source on GitHub
+      </a>
+    </p>
+  </section>
+
+  {
+    info && (
+      <section class="detail-section" aria-labelledby="plugin-heading">
+        <h2 id="plugin-heading">Plugin</h2>
+        <dl class="facts" data-testid="plugin-facts">
+          <dt>Version</dt>
+          <dd>{artifact.pluginVersion ?? 'not set'}</dd>
+          <dt>License</dt>
+          <dd>{info.license ?? 'not set'}</dd>
+          <dt>Author</dt>
+          <dd>
+            {info.author ? (
+              info.author.url ? (
+                <a href={info.author.url} target="_blank" rel="noopener noreferrer">
+                  {info.author.name}
+                </a>
+              ) : (
+                info.author.name
+              )
+            ) : (
+              'not set'
+            )}
+          </dd>
+          {artifact.category && (
+            <>
+              <dt>Category</dt>
+              <dd>{artifact.category}</dd>
+            </>
+          )}
+          {artifact.tags.length > 0 && (
+            <>
+              <dt>Tags</dt>
+              <dd>{artifact.tags.join(', ')}</dd>
+            </>
+          )}
+          {info.otherComponents.length > 0 && (
+            <>
+              <dt>Also contains</dt>
+              <dd>{info.otherComponents.join(', ')}</dd>
+            </>
+          )}
+        </dl>
+      </section>
+    )
+  }
+
+  {
+    artifact.bodyHtml !== null && (
+      <section class="detail-section" aria-labelledby="body-heading">
+        <h2 id="body-heading">Content</h2>
+        <div class="markdown-body" data-testid="artifact-body" set:html={artifact.bodyHtml} />
+      </section>
+    )
+  }
+
+  {
+    artifact.hooks && (
+      <section class="detail-section" aria-labelledby="hooks-heading">
+        <h2 id="hooks-heading">Hooks</h2>
+        <HooksTable rows={artifact.hooks} />
+      </section>
+    )
+  }
+
+  {
+    artifact.mcp && (
+      <section class="detail-section" aria-labelledby="mcp-heading">
+        <h2 id="mcp-heading">MCP server</h2>
+        <dl class="facts" data-testid="mcp-info">
+          <dt>Name</dt>
+          <dd>
+            <code>{artifact.mcp.name}</code>
+          </dd>
+          <dt>Transport</dt>
+          <dd>{artifact.mcp.transport}</dd>
+          {artifact.mcp.command && (
+            <>
+              <dt>Command</dt>
+              <dd>
+                <code>{[artifact.mcp.command, ...artifact.mcp.args].join(' ')}</code>
+              </dd>
+            </>
+          )}
+          {artifact.mcp.url && (
+            <>
+              <dt>URL</dt>
+              <dd>
+                <code>{artifact.mcp.url}</code>
+              </dd>
+            </>
+          )}
+        </dl>
+      </section>
+    )
+  }
+
+  {
+    info?.changelogHtml && (
+      <section class="detail-section" aria-labelledby="changelog-heading">
+        <h2 id="changelog-heading">Changelog</h2>
+        <div class="markdown-body" data-testid="changelog" set:html={info.changelogHtml} />
+      </section>
+    )
+  }
+
+  {
+    artifact.files.length > 0 && (
+      <section class="detail-section" aria-labelledby="files-heading">
+        <h2 id="files-heading">Files</h2>
+        <ul class="file-list" data-testid="file-list">
+          {artifact.files.map((file) => (
+            <li>
+              <a href={file.url} target="_blank" rel="noopener noreferrer">
+                <code>{file.path}</code>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+
+  <section class="detail-section" aria-labelledby="siblings-heading">
+    <h2 id="siblings-heading">Other artifacts in {artifact.plugin}</h2>
+    {
+      siblings.length === 0 ? (
+        <p>None.</p>
+      ) : (
+        <ul class="sibling-list" data-testid="sibling-list">
+          {siblings.map((sibling) => (
+            <li>
+              <span class={`badge badge-${sibling.type}`}>{sibling.type}</span>{' '}
+              <a href={`${base}${sibling.detailPath}`}>{sibling.name}</a>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </section>
+</article>

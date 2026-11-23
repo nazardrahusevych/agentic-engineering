@@ -86,7 +86,7 @@ describe('buildCatalog on the fixture marketplace', () => {
 
   it('AC-27: component data for the detail pages', () => {
     const skill = byId('alpha:code-review');
-    expect(skill.bodyHtml).toContain('<h1>Code review</h1>');
+    expect(skill.bodyHtml).toContain('<h3>Code review</h3>');
     expect(skill.bodyText).toContain('Read the diff');
     expect(skill.files.map((file) => file.path)).toEqual([
       'plugins/alpha/skills/code-review/SKILL.md',

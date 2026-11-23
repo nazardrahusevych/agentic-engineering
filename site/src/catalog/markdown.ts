@@ -26,6 +26,9 @@ const SCHEMA: SanitizeSchema = {
 
 const ABSOLUTE = /^[a-zA-Z][a-zA-Z0-9+.-]*:/;
 
+/** Rendered markdown sits under an h2 section of the detail page, so its headings start at h3. */
+const HEADING_SHIFT = 2;
+
 /** Resolves a repository-relative link target to a GitHub URL; returns null when it leaves the repository. */
 export function resolveRepoLink(target: string, ctx: MarkdownContext): string | null {
   const [pathPart = '', hash] = target.split('#', 2);
@@ -52,6 +55,8 @@ function rewriteLinksAndImages(ctx: MarkdownContext) {
   const visit = (node: HastRoot | Element): void => {
     node.children = node.children.map((child): ElementContent => {
       if (child.type !== 'element') return child as ElementContent;
+      const heading = /^h([1-6])$/.exec(child.tagName);
+      if (heading) child.tagName = `h${Math.min(Number(heading[1]) + HEADING_SHIFT, 6)}`;
       if (child.tagName === 'img') {
         const src = typeof child.properties.src === 'string' ? child.properties.src : '';
         const alt = typeof child.properties.alt === 'string' && child.properties.alt !== '' ? child.properties.alt : src;
