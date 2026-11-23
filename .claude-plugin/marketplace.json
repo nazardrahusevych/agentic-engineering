@@ -1,0 +1,8 @@
+{
+  "name": "agentic-engineering",
+  "owner": {
+    "name": "Nazar Drahusevych"
+  },
+  "description": "Skills, agents, hooks and workflows for engineering with AI coding agents",
+  "plugins": []
+}
