@@ -1,0 +1,14 @@
+{
+  "name": "agentic-engineering",
+  "private": true,
+  "type": "module",
+  "description": "Repository tooling for the agentic-engineering plugin marketplace",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "release": "node scripts/release.mjs",
+    "rollback": "node scripts/rollback.mjs",
+    "test": "node --test \"scripts/**/*.test.mjs\""
+  }
+}
