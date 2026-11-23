@@ -1,0 +1,8 @@
+{
+  "name": "alpha",
+  "version": "1.2.0",
+  "description": "Quality tools: code review, security audit, deploy checks",
+  "author": { "name": "Alpha Author", "url": "https://example.com/alpha" },
+  "license": "MIT",
+  "keywords": ["audit"]
+}

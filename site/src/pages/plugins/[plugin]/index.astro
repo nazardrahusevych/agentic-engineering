@@ -1,0 +1,29 @@
+---
+import type { GetStaticPaths } from 'astro';
+import type { Artifact } from '../../../catalog/types.ts';
+import ArtifactDetail from '../../../components/detail/ArtifactDetail.astro';
+import Base from '../../../layouts/Base.astro';
+import { getCatalog } from '../../../lib/catalog-data.ts';
+
+export const getStaticPaths = (() => {
+  const { artifacts } = getCatalog();
+  return artifacts
+    .filter((artifact) => artifact.type === 'plugin')
+    .map((artifact) => ({
+      params: { plugin: artifact.plugin },
+      props: { artifact, siblings: artifacts.filter((other) => other.plugin === artifact.plugin && other !== artifact) },
+    }));
+}) satisfies GetStaticPaths;
+
+interface Props {
+  artifact: Artifact;
+  siblings: Artifact[];
+}
+
+const { artifact, siblings } = Astro.props;
+const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+---
+
+<Base title={`${artifact.name} (plugin) — agentic-engineering`} description={artifact.description}>
+  <ArtifactDetail artifact={artifact} siblings={siblings} base={base} />
+</Base>

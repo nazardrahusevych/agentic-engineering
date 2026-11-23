@@ -1,0 +1,35 @@
+---
+import Base from '../layouts/Base.astro';
+
+const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+---
+
+<Base title="Not found — agentic-engineering" description="This page is not in the catalog." noindex>
+  <div class="not-found" data-testid="not-found">
+    <h1>Not found</h1>
+    <p class="lead">This artifact is not in the catalog. It may have been renamed or removed. Search for it instead:</p>
+    <form method="get" action={base} role="search">
+      <div>
+        <label for="not-found-search">Search</label>
+        <input id="not-found-search" type="search" name="q" maxlength="200" />
+      </div>
+      <button type="submit">Search</button>
+    </form>
+    <p><a href={base}>Browse the whole catalog</a></p>
+  </div>
+  <script is:inline>
+    // Pre-fill the search with the last path segment (AC-29); set as a value, never as markup.
+    (function () {
+      var input = document.getElementById('not-found-search');
+      if (!input) return;
+      var segments = window.location.pathname.split('/').filter(Boolean);
+      var last = segments[segments.length - 1] || '';
+      try {
+        last = decodeURIComponent(last);
+      } catch (error) {
+        /* keep the raw segment */
+      }
+      input.value = last.replace(/\.html?$/, '').trim().slice(0, 200);
+    })();
+  </script>
+</Base>

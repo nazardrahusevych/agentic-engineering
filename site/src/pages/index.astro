@@ -1,0 +1,26 @@
+---
+import CopyCommand from '../components/CopyCommand.tsx';
+import SearchApp from '../components/search/SearchApp.tsx';
+import Base from '../layouts/Base.astro';
+import { getCatalog } from '../lib/catalog-data.ts';
+
+const catalog = getCatalog();
+const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+const { marketplace } = catalog;
+---
+
+<Base
+  title={`${marketplace.name} — Claude Code plugin catalog`}
+  description={`Search every skill, agent, command, hook and MCP server of the ${marketplace.name} marketplace.`}
+>
+  <h1>{marketplace.name}</h1>
+  <p class="lead">
+    {marketplace.description || 'Claude Code plugins.'} Search the skills, agents, commands, hooks and MCP servers
+    inside every plugin, then copy the install command.
+  </p>
+  <div class="add-marketplace" data-testid="add-marketplace">
+    <p>Add the marketplace in Claude Code first:</p>
+    <CopyCommand client:load command={marketplace.addCommand} label="Copy" context="marketplace add command" showCommand />
+  </div>
+  <SearchApp client:load base={base} repo={catalog.repo} />
+</Base>

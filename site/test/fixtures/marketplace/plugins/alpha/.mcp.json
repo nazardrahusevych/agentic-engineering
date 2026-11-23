@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "docs-search": {
+      "command": "npx",
+      "args": ["-y", "docs-search-mcp", "--index", "${CLAUDE_PLUGIN_ROOT}/docs"]
+    }
+  }
+}

@@ -1,0 +1,42 @@
+---
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+  noindex?: boolean;
+}
+
+const { title, description, noindex = false } = Astro.props;
+const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <title>{title}</title>
+    <link rel="alternate" type="application/json" href={`${base}catalog.json`} title="Catalog (JSON)" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header">
+      <div class="container">
+        <a class="brand" href={base}>agentic-engineering</a>
+        <span class="tagline">Claude Code plugin catalog</span>
+      </div>
+    </header>
+    <noscript>
+      <p class="container noscript">JavaScript is required to search the catalog. Every artifact still has its own page.</p>
+    </noscript>
+    <main id="main" class="container" tabindex="-1">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

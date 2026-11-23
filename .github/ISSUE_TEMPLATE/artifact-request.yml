@@ -1,0 +1,30 @@
+name: Request an artifact
+description: Ask for a skill, agent, command, hook or MCP server the catalog does not have yet.
+title: "Request: "
+labels: [request]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for telling us what you were looking for. The catalog site fills in the search and filters for you.
+  - type: input
+    id: query
+    attributes:
+      label: What did you search for?
+      description: The words you typed in the catalog search.
+    validations:
+      required: false
+  - type: input
+    id: filters
+    attributes:
+      label: Active filters
+      description: 'For example "type: skill; plugin: beta".'
+    validations:
+      required: false
+  - type: textarea
+    id: details
+    attributes:
+      label: What should it do?
+      description: The task you want help with, the tools or languages involved, and what a good result looks like.
+    validations:
+      required: true
